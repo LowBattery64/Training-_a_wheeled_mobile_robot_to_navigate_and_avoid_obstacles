@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# Временные сцены, генерируемые train.py / StagedCurriculumEnv на лету
+_tmp_stage*.xml
+
+# Логи обучения (TensorBoard event-файлы — большие и бессмысленны вне контекста запуска)
+logs/
+
+# Чекпоинты моделей — большие бинарники (~5 МБ каждый).
+# Если хотите хранить их в репозитории, используйте Git LFS:
+#   git lfs track "*.zip"
+# и закомментируйте строки ниже.
+models/*.zip
+!models/.gitkeep
+
+# OS / редакторы
+.DS_Store
+.vscode/
+*.swp
+
+# Артефакты IDE
+.idea/
