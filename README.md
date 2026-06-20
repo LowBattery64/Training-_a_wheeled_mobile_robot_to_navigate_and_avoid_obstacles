@@ -211,6 +211,3 @@ python test_scenes.py
 - Choi J., Lee G., Lee C. (2021). *Reinforcement learning-based dynamic obstacle avoidance and integration of path planning.* Intelligent Service Robotics, 14, 663–677.
 - Haarnoja T. et al. (2018). *Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning.* ICML.
 
-## Лицензия
-
-См. файл [LICENSE](LICENSE) (наследуется от исходного репозитория `summit_xl_description` / `mujoco_mecanum`).
