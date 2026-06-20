@@ -1,0 +1,18 @@
+<mujocoinclude>
+	<!-- Этап 2: коридор — цель прямо, стены сужены -->
+	<light cutoff="4.0" diffuse="1 1 1" dir="-0.9 -0.9 -2.5" directional="true" exponent="20" pos="0.9 0.9 2.5" specular="0 0 0" />
+	<light cutoff="4.0" diffuse="0.6 0.6 0.7" dir="1 -1 -1.5" directional="true" exponent="20" pos="-1.5 1.5 3.0" specular="0 0 0" />
+	<geom name="ground" pos="0 0 -0.01" rgba="0.25 0.26 0.25 1" size="5 5 2" type="plane" contype="1" conaffinity="1" />
+	<!-- Внешние стены -->
+	<geom name="wall1" type="box" size="5 0.1 0.6" pos="0 -4.9 0.6" rgba="0.5 0.35 0.2 1" contype="1" conaffinity="1" />
+	<geom name="wall2" type="box" size="5 0.1 0.6" pos="0  4.9 0.6" rgba="0.5 0.35 0.2 1" contype="1" conaffinity="1" />
+	<geom name="wall3" type="box" size="0.1 5 0.6" pos=" 4.9 0 0.6" rgba="0.5 0.35 0.2 1" contype="1" conaffinity="1" />
+	<geom name="wall4" type="box" size="0.1 5 0.6" pos="-4.9 0 0.6" rgba="0.5 0.35 0.2 1" contype="1" conaffinity="1" />
+	<!-- Коридор: верхняя и нижняя стены вдоль маршрута -->
+	<geom name="corridor_top" type="box" size="4.5 0.1 0.6" pos="0.0 -2.8 0.6" rgba="0.3 0.5 0.8 1" contype="1" conaffinity="1" />
+
+	<body name="goal_marker" pos="3.5 -4.0 0.15">
+		<geom name="goal" type="sphere" size="0.3" rgba="0 1 0 0.8" contype="0" conaffinity="0" group="2"/>
+	</body>
+	<geom name="start_marker" type="sphere" size="0.15" pos="-3.5 -4.0 0.15" rgba="0.9 0.2 0.2 1" contype="0" conaffinity="0" group="2"/>
+</mujocoinclude>
