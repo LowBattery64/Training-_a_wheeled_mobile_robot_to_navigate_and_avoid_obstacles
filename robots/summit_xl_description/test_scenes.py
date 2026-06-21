@@ -3,11 +3,16 @@ from stable_baselines3 import SAC
 import time, os, sys
 import numpy as np
 
+import math
+
+# Формат: (xml, название, старт_xy, цель_xy, старт_yaw)
+# старт_yaw в радианах: 0 = смотрит на восток (+X), -pi/2 = на юг (-Y),
+# pi/2 = на север (+Y), pi = на запад (-X)
 SCENES = {
-    "1": ("scene_maze.xml",       "Лабиринт",                       (0,0), (3.5, -4.0)),
-    "2": ("scene_random.xml",     "Случайные препятствия",          (-3.5,-4.0), (3.5,-4.0)),
-    "3": ("scene_zigzag.xml",     "Зигзаг",                         (-3.5,-4.0), (3.5, 3.5)),
-    "4": ("scene_final_test.xml", "Финальный тест (5 препятствий)", (-3.5,-4.0), (3.5,-4.0)),
+    "1": ("scene_maze.xml",       "Лабиринт",                       (0,0),       (3.5, -4.0), -math.pi/2),
+    "2": ("scene_random.xml",     "Случайные препятствия",          (-3.5,-4.0), (3.5,-4.0),   0.0),
+    "3": ("scene_zigzag.xml",     "Зигзаг",                         (-3.5,-4.0), (3.5, 3.5),   0.0),
+    "4": ("scene_final_test.xml", "Финальный тест (5 препятствий)", (-3.5,-4.0), (3.5,-4.0),   0.0),
 }
 
 # Доступные модели
@@ -15,7 +20,7 @@ MODELS = {
     "1": ("models/best_model",         "Лучшая сохранённая"),
     "2": ("models/summit_staged_final","Staged curriculum (новая)"),
     "3": ("best_old_model",            "Старая модель (без лидара)"),
-    "4": ("models/best_model",          "Новая лучшая (с лидаром)"),
+    "4": ("models/summit_staged_600000_steps",          "Новая лучшая (с лидаром)"),
 }
 
 print("Выберите модель:")
@@ -48,7 +53,7 @@ else:
     sys.exit(1)
 
 print("\nВыберите сцену:")
-for k, (f, name, start, goal) in SCENES.items():
+for k, (f, name, start, goal, yaw) in SCENES.items():
     print(f"  {k}. {name}  (старт {start} → цель {goal})")
 
 scene_choice = input("\nВведите 1, 2, 3 или 4: ").strip()
@@ -56,7 +61,7 @@ if scene_choice not in SCENES:
     print("Неверный выбор")
     sys.exit(1)
 
-scene_file, scene_name, start_xy, goal_xy = SCENES[scene_choice]
+scene_file, scene_name, start_xy, goal_xy, start_yaw = SCENES[scene_choice]
 
 # Создаём временный XML с нужной сценой
 with open("summit_xls.xml") as f:
@@ -79,8 +84,9 @@ with open("_tmp_test.xml", "w") as f:
 
 # Создаём env с правильным obs space
 class TestEnv(SummitEnv):
-    START_XY = np.array(list(start_xy))
-    GOAL_XY  = np.array(list(goal_xy))
+    START_XY  = np.array(list(start_xy))
+    GOAL_XY   = np.array(list(goal_xy))
+    START_YAW = start_yaw
 
 env = TestEnv("_tmp_test.xml", render_mode="human")
 
