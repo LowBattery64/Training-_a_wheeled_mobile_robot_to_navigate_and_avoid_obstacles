@@ -3,7 +3,6 @@
 # 1. Лидар за 3 шага подряд (как в статье: slidar = [t-2, t-1, t])
 # 2. Эпизод завершается СРАЗУ при столкновении (штраф -10, как в статье)
 # 3. Штраф за угловое вращение (Rω из статьи)
-# 4. Исправлен лидар — start_marker исключён через geomgroup
 
 import gymnasium as gym
 from gymnasium import spaces
@@ -18,6 +17,7 @@ class SummitEnv(gym.Env):
 
     START_XY = np.array([-3.5, -4.0])
     GOAL_XY  = np.array([ 3.5, -4.0])
+    START_YAW = 0.0  # рад; 0 = смотрит на восток (+X). -pi/2 = смотрит на юг (-Y)
     BASE_Z   = 0.247
 
     LIDAR_RAYS   = 24       # больше лучей — лучше картина
@@ -202,8 +202,12 @@ class SummitEnv(gym.Env):
         self.data.qpos[0] = self.START_XY[0]
         self.data.qpos[1] = self.START_XY[1]
         self.data.qpos[2] = self.BASE_Z
-        self.data.qpos[3] = 1.0
-        self.data.qpos[4:7] = 0.0
+        # Кватернион поворота вокруг Z на угол START_YAW: (cos(θ/2), 0, 0, sin(θ/2))
+        half = self.START_YAW / 2.0
+        self.data.qpos[3] = float(np.cos(half))  # qw
+        self.data.qpos[4] = 0.0                  # qx
+        self.data.qpos[5] = 0.0                  # qy
+        self.data.qpos[6] = float(np.sin(half))  # qz
         self.data.qvel[:] = 0.0
         self.data.ctrl[:] = 0.0
 
