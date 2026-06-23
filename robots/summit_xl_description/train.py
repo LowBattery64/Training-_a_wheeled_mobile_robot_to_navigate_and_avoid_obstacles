@@ -4,14 +4,7 @@
 # Этап 2: коридор                 (200–400k) — учимся не касаться стен
 # Этап 3: коридор с препятствиями (400–700k) — учимся объезжать
 # Этап 4: открытое поле + много   (700k–1.5M) — генерализация
-#
-# ИЗМЕНЕНИЯ В ЭТОЙ ВЕРСИИ:
-# 1. Поддержка дообучения: если найден чекпоинт, грузим веса и продолжаем
-#    с того шага, на котором остановились (этап/сложность выставляются
-#    автоматически по SCHEDULE, без проигрывания всей истории заново).
-# 2. Параллельные среды (SubprocVecEnv) — ускоряет сбор опыта в N раз
-#    на CPU с несколькими ядрами. Curriculum применяется через env_method,
-#    что совместимо с SubprocVecEnv (каждый процесс получает команду сам).
+
 
 import os
 import sys
@@ -213,12 +206,11 @@ def find_latest_checkpoint():
         if m:
             candidates.append((int(m.group(1)), f))
 
-    # best_model.zip не содержит число шагов в имени — если других нет, тоже подходит,
-    # но мы не знаем точный timestep, поэтому используем его только если явно попросили.
+.
     if not candidates:
         best = os.path.join(MODEL_DIR, "best_model.zip")
         if os.path.exists(best):
-            return best, None  # шаги неизвестны — попросим пользователя
+            return best, None 
 
     if candidates:
         candidates.sort(key=lambda x: x[0], reverse=True)
@@ -230,7 +222,7 @@ def find_latest_checkpoint():
 
 if __name__ == "__main__":
     # ── Настройка дообучения ────────────────────────────────────────
-    # Если RESUME_FROM передан явно — используем его. Иначе ищем автоматически.
+    
     RESUME_PATH = None
     RESUME_FROM_STEP = None
 
@@ -291,8 +283,7 @@ if __name__ == "__main__":
         model = SAC.load(RESUME_PATH, env=train_env, tensorboard_log=LOG_DIR)
         model.num_timesteps = RESUME_FROM_STEP  # синхронизируем счётчик шагов
 
-        # Выставляем этап/сложность, соответствующие этому шагу,
-        # чтобы не "откатываться" на этап 1 при рестарте.
+
         idx = -1
         for i, entry in enumerate(curriculum_cb.SCHEDULE):
             if RESUME_FROM_STEP >= entry[0]:
