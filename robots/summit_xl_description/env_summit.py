@@ -1,8 +1,4 @@
-# env_summit.py — по мотивам MCAL (Choi et al. 2021)
-# Ключевые изменения vs предыдущей версии:
-# 1. Лидар за 3 шага подряд (как в статье: slidar = [t-2, t-1, t])
-# 2. Эпизод завершается СРАЗУ при столкновении (штраф -10, как в статье)
-# 3. Штраф за угловое вращение (Rω из статьи)
+# env_summit.py 
 
 import gymnasium as gym
 from gymnasium import spaces
@@ -45,8 +41,7 @@ class SummitEnv(gym.Env):
         self._floor_geom_id = mujoco.mj_name2id(
             self.model, mujoco.mjtObj.mjOBJ_GEOM, "ground")
         self._base_footprint_id = self.model.body("base_footprint").id
-        # mj_ray bodyexclude не исключает дочерние тела — используем -1
-        # и вместо этого фильтруем геомы робота постфактум
+  
         self._robot_geom_ids = set()
         for i in range(self.model.ngeom):
             bid = self.model.geom_bodyid[i]
@@ -74,7 +69,7 @@ class SummitEnv(gym.Env):
             if gid >= 0:
                 self._obs_geom_names.append(name)
 
-        # Буфер лидара за 3 шага (как в статье)
+    
         self._lidar_buffer = deque(maxlen=3)
 
         # obs = nav(8) + lidar_t(24) + lidar_t-1(24) + lidar_t-2(24) = 80
@@ -115,8 +110,7 @@ class SummitEnv(gym.Env):
                        dtype=np.float64)
         distances = np.ones(self.LIDAR_RAYS, dtype=np.float32)
 
-        # Маска: видим ТОЛЬКО group=0 (стены, препятствия)
-        # Корпус робота group=1, колёса group=3, маркеры group=2 — все игнорируются
+
         gmask = np.array([1, 0, 0, 0, 0, 0], dtype=np.uint8)
 
         for i in range(self.LIDAR_RAYS):
@@ -152,7 +146,6 @@ class SummitEnv(gym.Env):
             np.cos(yaw), np.sin(yaw),
         ], dtype=np.float32)
 
-        # Текущий лидар + добавляем в буфер
         lidar_now = self._cast_lidar()
         self._lidar_buffer.append(lidar_now)
 
@@ -236,7 +229,7 @@ class SummitEnv(gym.Env):
         goal_xy  = self._get_goal_xy()
         dist     = float(np.linalg.norm(goal_xy - robot_xy))
 
-        # ── Награда по статье (адаптировано) ────────────────────────
+        # ── Награда ────────────────────────
         # Rg: потенциальная награда за приближение
         progress = self._prev_dist - dist
         reward = progress * 10.0
@@ -248,7 +241,7 @@ class SummitEnv(gym.Env):
         vel_toward  = vx * to_goal_dir[0] + vy * to_goal_dir[1]
         reward += max(0.0, vel_toward) * 0.3
 
-        # Rω: штраф за угловое вращение (из статьи)
+        # Rω: штраф за угловое вращение 
         wz = float(self.data.qvel[5])
         if abs(wz) > 0.5:
             reward -= 0.1 * abs(wz)
@@ -261,7 +254,7 @@ class SummitEnv(gym.Env):
         # ── Завершение ───────────────────────────────────────────────
         terminated = dist < self.goal_threshold
 
-        # Rc: СРАЗУ завершаем при столкновении (как в статье)
+        # Rc: СРАЗУ завершаем при столкновении 
         collision = self._get_wall_contact()
         if collision:
             reward -= 10.0
