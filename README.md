@@ -214,7 +214,6 @@ TensorBoard 2.x.x at http://localhost:6006/
 
 ## Источники
 
-- Модель робота: [JunHeonYoon/mujoco_mecanum](https://github.com/JunHeonYoon/mujoco_mecanum)
 - MuJoCo: [mujoco.readthedocs.io](https://mujoco.readthedocs.io)
 - Gymnasium API: [gymnasium.farama.org](https://gymnasium.farama.org)
 - Stable-Baselines3: [stable-baselines3.readthedocs.io](https://stable-baselines3.readthedocs.io)
